@@ -255,6 +255,12 @@ void JsExtensionBindingsSystem::DispatchEventInContext(
     const base::ListValue* event_args,
     const base::DictionaryValue* filtering_info,
     ScriptContext* context) {
+
+  if (context->GetEventFilter()
+      && !context->GetEventFilter()->Filter(event_name, event_args, filtering_info)) {
+      return;
+  }
+
   v8::HandleScope handle_scope(context->isolate());
   v8::Context::Scope context_scope(context->v8_context());
 

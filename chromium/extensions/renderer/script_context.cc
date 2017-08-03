@@ -112,8 +112,11 @@ ScriptContext::ScriptContext(const v8::Local<v8::Context>& v8_context,
   gin::PerContextData* gin_data = gin::PerContextData::From(v8_context);
   CHECK(gin_data);
   gin_data->set_runner(runner_.get());
-  if (web_frame_)
+  if (web_frame_) {
     url_ = GetAccessCheckedFrameURL(web_frame_);
+    // init VivaldiEventFilter
+    filter_.reset(new vivaldi::VivaldiEventFilter(this));
+  }
 }
 
 ScriptContext::~ScriptContext() {

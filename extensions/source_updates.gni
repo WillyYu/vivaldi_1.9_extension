@@ -18,6 +18,8 @@ post_process_target("//extensions/renderer:renderer") {
   sources += [
     "//vivaldi/extensions/vivaldi_script_dispatcher.cpp",
     "//vivaldi/extensions/vivaldi_script_dispatcher.h",
+    "//vivaldi/extensions/vivaldi_event_filter.cc",
+    "//vivaldi/extensions/vivaldi_event_filter.h",
   ]
 }
 

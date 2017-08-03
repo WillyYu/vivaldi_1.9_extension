@@ -226,10 +226,20 @@ base::LazyInstance<WorkerScriptContextSet> g_worker_script_context_set =
 class VivaldiNativeHandler : public ObjectBackedNativeHandler {
  public:
   explicit VivaldiNativeHandler(ScriptContext* context)
-      : ObjectBackedNativeHandler(context) {
+      : ObjectBackedNativeHandler(context),
+      filter_(context->GetEventFilter()) {
     RouteFunction(
         "GetVivaldi",
         base::Bind(&VivaldiNativeHandler::GetVivaldi, base::Unretained(this)));
+    RouteFunction(
+        "OnWebViewElementAttached",
+        base::Bind(&VivaldiNativeHandler::OnWebViewElementAttached,
+                    base::Unretained(this)));
+    RouteFunction(
+        "OnWebViewElementDetached",
+        base::Bind(&VivaldiNativeHandler::OnWebViewElementDetached,
+                    base::Unretained(this)));
+
   }
 
   void GetVivaldi(const v8::FunctionCallbackInfo<v8::Value>& args) {
@@ -243,6 +253,36 @@ class VivaldiNativeHandler : public ObjectBackedNativeHandler {
     }
     args.GetReturnValue().Set(vivaldi);
   }
+
+  void OnWebViewElementAttached(
+        const v8::FunctionCallbackInfo<v8::Value>& args) {
+    // There are three parameters.
+    CHECK(args.Length() == 2);
+    // View Instance ID.
+    CHECK(args[0]->IsInt32());
+    // Tab ID.
+    CHECK(args[1]->IsInt32());
+    int view_instance_id = args[0]->Int32Value();
+    int tab_id = args[1]->Int32Value();
+    if (filter_)
+      filter_->AddGuestViewAndTabId(view_instance_id, tab_id);
+  }
+
+  void OnWebViewElementDetached(
+      const v8::FunctionCallbackInfo<v8::Value>& args) {
+    // There are two parameters.
+    CHECK(args.Length() == 2);
+    // View Instance ID.
+    CHECK(args[0]->IsInt32());
+    // Tab ID.
+    CHECK(args[1]->IsInt32());
+    int view_instance_id = args[0]->Int32Value();
+    int tab_id = args[1]->Int32Value();
+    if (filter_)
+      filter_->RemoveGuestViewAndTabId(view_instance_id, tab_id);
+  }
+ private:
+  vivaldi::VivaldiEventFilter* filter_;
 };
 
 }  // namespace

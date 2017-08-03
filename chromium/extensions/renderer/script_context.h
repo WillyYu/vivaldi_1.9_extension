@@ -23,6 +23,7 @@
 #include "gin/runner.h"
 #include "url/gurl.h"
 #include "v8/include/v8.h"
+#include "extensions/vivaldi_event_filter.h"
 
 namespace blink {
 class WebFrame;
@@ -276,6 +277,8 @@ class ScriptContext : public RequestSender::Source {
   std::unique_ptr<Runner> runner_;
 
   base::ThreadChecker thread_checker_;
+
+  std::unique_ptr<vivaldi::VivaldiEventFilter> filter_;
 
   DISALLOW_COPY_AND_ASSIGN(ScriptContext);
 };

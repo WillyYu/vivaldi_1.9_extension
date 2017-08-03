@@ -14,6 +14,7 @@ var WebViewConstants = require('webViewConstants').WebViewConstants;
 var WebViewEvents = require('webViewEvents').WebViewEvents;
 var WebViewEventsPrivate = require('webViewEventsPrivate').WebViewEventsPrivate; 
 var WebViewInternal = require('webViewInternal').WebViewInternal;
+var VivaldiNatives = requireNative('vivaldi');
 
 // Represents the internal state of <webview>.
 function WebViewImpl(webviewElement) {
@@ -66,6 +67,13 @@ WebViewImpl.prototype.onElementAttached = function() {
   for (var i in this.attributes) {
     this.attributes[i].attach();
   }
+  // Willy, get the windowId and tabId that context hold
+  var tabId = 0;
+  if (this.element.hasAttribute("tab_id")) {
+    tabId = parseInt(this.element.getAttribute("tab_id"));
+  }
+  VivaldiNatives.OnWebViewElementAttached(this.viewInstanceId, tabId);
+
 };
 
 // Resets some state upon detaching <webview> element from the DOM.
@@ -77,6 +85,13 @@ WebViewImpl.prototype.onElementDetached = function() {
   for (var i in this.attributes) {
     this.attributes[i].detach();
   }
+  // Willy, get the windowId and tabId that context hold
+  var tabId = 0;
+  if (this.element.hasAttribute("tab_id")) {
+    tabId = parseInt(this.element.getAttribute("tab_id"));
+  }
+  VivaldiNatives.OnWebViewElementDetached(this.viewInstanceId, tabId);
+
 };
 
 // Sets the <webview>.request property.
